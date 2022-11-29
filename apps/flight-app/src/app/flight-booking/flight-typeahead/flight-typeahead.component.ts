@@ -1,38 +1,57 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, share, Subject, Subscription, takeUntil, tap, timer } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { Flight } from '@flight-workspace/flight-lib';
+import { debounceTime, distinctUntilChanged, filter, Observable, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'flight-workspace-flight-typeahead',
   templateUrl: './flight-typeahead.component.html',
   styleUrls: ['./flight-typeahead.component.css'],
 })
-export class FlightTypeaheadComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
-  protected timer$ = timer(0, 1_000).pipe(
-    tap(value => console.log('Observable processing', value)),
-    takeUntil(this.destroy$),
-    share(),
-  );
-  private subscriptions = new Subscription();
+export class FlightTypeaheadComponent {
+  control = new FormControl('', { nonNullable: true });
+  flights$ = this.getResultStream$();
+  loading = false;
 
-  constructor() {
-    this.rxjsDemo();
+  constructor(private http: HttpClient) {
   }
 
-  ngOnInit(): void {}
-
-  private rxjsDemo(): void {
-    this.subscriptions.add(
-      this.timer$.subscribe(console.log)
+  private getResultStream$(): Observable<Flight[]> {
+    /**
+     * Stream 1: Input control value changes
+     *  - Trigger
+     *  - State/data provider
+     */
+    return this.control.valueChanges.pipe(
+      // Filtering START
+      filter(city => city.length > 2),
+      debounceTime(300),
+      distinctUntilChanged(),
+      // Filtering END
+      tap(() => this.loading = true),
+      /**
+       * Stream 2: HTTP backend API call
+       *  - State/data provider
+       */
+      switchMap(city => this.load(city)),
+      tap(() => this.loading = false)
     );
   }
 
-  getTimerStream$(): Observable<number> {
-    return this.timer$;
-  }
+  /**
+   * Stream 2: HTTP backend API call
+   *  - State/data provider
+   */
+  load(from: string): Observable<Flight[]>  {
+    const url = "http://www.angular.at/api/flight";
 
-  ngOnDestroy(): void {
-    // this.subscriptions.unsubscribe();
-    this.destroy$.next();
+    const params = new HttpParams()
+                        .set('from', from);
+
+    const headers = new HttpHeaders()
+                        .set('Accept', 'application/json');
+
+    return this.http.get<Flight[]>(url, {params, headers});
   }
 }
