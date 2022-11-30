@@ -5,9 +5,7 @@
   "targets": {
     "build": {
       "executor": "@nrwl/angular:webpack-browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/flight-app",
         "index": "apps/flight-app/src/index.html",
@@ -101,9 +99,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/apps/flight-app"
-      ],
+      "outputs": ["coverage/apps/flight-app"],
       "options": {
         "jestConfig": "apps/flight-app/jest.config.ts",
         "passWithNoTests": true
@@ -116,8 +112,5 @@
       }
     }
   },
-  "tags": [
-    "type:app",
-    "domain:flights"
-  ]
+  "tags": ["type:app", "domain:flights"]
 }
