@@ -13,7 +13,7 @@ export class FlightSearchComponent implements OnInit {
   from = 'Hamburg'; // in Germany
   to = 'Graz'; // in Austria
   urgent = false;
-  flights$ = this.store.select(fromFlightBooking.selectActiveUserFlights);
+  flights$ = this.store.select(fromFlightBooking.selectFlights);
 
   // "shopping basket" with selected flights
   basket: { [id: number]: boolean } = {
