@@ -1,5 +1,6 @@
-import { HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { tap } from 'rxjs';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PreloadAllModules, RouterModule } from '@angular/router';
@@ -20,6 +21,7 @@ import { HomeComponent } from './home/home.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SharedModule } from './shared/shared.module';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { AppConfigService, Config } from './app-config.service';
 
 @NgModule({
   imports: [
@@ -50,7 +52,17 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     HomeComponent,
     BasketComponent
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (http: HttpClient, configService: AppConfigService) => () =>
+        http.get<Config>('./assets/runtime/config.json').pipe(
+          tap(config => configService.config.next(config))
+        ),
+      deps: [HttpClient, AppConfigService],
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
