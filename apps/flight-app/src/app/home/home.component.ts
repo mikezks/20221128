@@ -3,6 +3,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AppState } from '../app-state/app-state.service';
 
 @Component({
   selector: 'app-home',
@@ -14,12 +15,15 @@ export class HomeComponent implements OnInit {
   expertMode = false;
   needsLogin$: Observable<boolean> | undefined;
   _userName = '';
+  name = this.appState.getState()['name'];
 
   get userName(): string {
     return this._userName;
   }
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private appState: AppState) {}
 
   changed($event: CustomEvent): void {
     console.debug('$event.detail ', $event.detail);
