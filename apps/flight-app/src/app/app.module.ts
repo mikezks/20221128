@@ -5,8 +5,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PreloadAllModules, RouterModule } from '@angular/router';
 import { FlightLibModule } from '@flight-workspace/flight-lib';
-import { FlightCancellingModule } from './flight-booking/flight-cancelling/flight-cancelling.module';
-import { PassengerModule } from './passenger/passenger.module';
 
 import { EffectsModule } from '@ngrx/effects';
 import { RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
@@ -22,6 +20,9 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { SharedModule } from './shared/shared.module';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { AppConfigService, Config } from './app-config.service';
+import { PassengerModule } from './passenger/passenger.module';
+import { FlightCancellingModule } from './flight-booking/flight-cancelling/flight-cancelling.module';
+import { OAuthModule } from 'angular-oauth2-oidc';
 
 @NgModule({
   imports: [
@@ -44,6 +45,7 @@ import { AppConfigService, Config } from './app-config.service';
       routerState: RouterState.Minimal
     }),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
+    OAuthModule.forRoot()
   ],
   declarations: [
     AppComponent,
